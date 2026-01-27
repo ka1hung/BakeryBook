@@ -18,12 +18,18 @@ export interface Recipe {
   updatedAt: string;              // ISO 日期字串
 }
 
-// 營養成分總計
+// 營養成分總計（符合台灣食藥署標示規範）
 export interface NutritionTotal {
   calories: number;
   protein: number;
   fat: number;
+  saturatedFat: number;
+  transFat: number;
   carbohydrates: number;
+  sugar: number;
+  sodium: number;
+  fiber: number;
+  cholesterol: number;
 }
 
 // 配方計算結果

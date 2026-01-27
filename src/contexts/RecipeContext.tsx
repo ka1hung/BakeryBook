@@ -12,6 +12,7 @@ interface RecipeContextType {
   deleteRecipe: (id: string) => void;
   getRecipeById: (id: string) => Recipe | undefined;
   copyRecipe: (id: string) => void;
+  setRecipes: React.Dispatch<React.SetStateAction<Recipe[]>>;
 }
 
 // 建立 Context
@@ -104,6 +105,7 @@ export const RecipeProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     deleteRecipe,
     getRecipeById,
     copyRecipe,
+    setRecipes,
   };
 
   return <RecipeContext.Provider value={value}>{children}</RecipeContext.Provider>;

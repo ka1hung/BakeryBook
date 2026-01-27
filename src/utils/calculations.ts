@@ -53,6 +53,7 @@ export function calculateTotalCost(
   materials: Material[]
 ): number {
   return ingredients.reduce((total, ingredient) => {
+    if (!ingredient) return total;
     const material = materials.find((m) => m.id === ingredient.materialId);
     if (!material) return total;
 
@@ -77,7 +78,13 @@ export function calculateIngredientNutrition(
     calories: 0,
     protein: 0,
     fat: 0,
+    saturatedFat: 0,
+    transFat: 0,
     carbohydrates: 0,
+    sugar: 0,
+    sodium: 0,
+    fiber: 0,
+    cholesterol: 0,
   };
 
   if (!material.nutrition) {
@@ -95,7 +102,13 @@ export function calculateIngredientNutrition(
     calories: (material.nutrition.calories || 0) * ratio,
     protein: (material.nutrition.protein || 0) * ratio,
     fat: (material.nutrition.fat || 0) * ratio,
+    saturatedFat: (material.nutrition.saturatedFat || 0) * ratio,
+    transFat: (material.nutrition.transFat || 0) * ratio,
     carbohydrates: (material.nutrition.carbohydrates || 0) * ratio,
+    sugar: (material.nutrition.sugar || 0) * ratio,
+    sodium: (material.nutrition.sodium || 0) * ratio,
+    fiber: (material.nutrition.fiber || 0) * ratio,
+    cholesterol: (material.nutrition.cholesterol || 0) * ratio,
   };
 }
 
@@ -111,6 +124,7 @@ export function calculateTotalNutrition(
 ): NutritionTotal {
   return ingredients.reduce(
     (total, ingredient) => {
+      if (!ingredient) return total;
       const material = materials.find((m) => m.id === ingredient.materialId);
       if (!material) return total;
 
@@ -124,32 +138,56 @@ export function calculateTotalNutrition(
         calories: total.calories + nutrition.calories,
         protein: total.protein + nutrition.protein,
         fat: total.fat + nutrition.fat,
+        saturatedFat: total.saturatedFat + nutrition.saturatedFat,
+        transFat: total.transFat + nutrition.transFat,
         carbohydrates: total.carbohydrates + nutrition.carbohydrates,
+        sugar: total.sugar + nutrition.sugar,
+        sodium: total.sodium + nutrition.sodium,
+        fiber: total.fiber + nutrition.fiber,
+        cholesterol: total.cholesterol + nutrition.cholesterol,
       };
     },
-    { calories: 0, protein: 0, fat: 0, carbohydrates: 0 }
+    {
+      calories: 0,
+      protein: 0,
+      fat: 0,
+      saturatedFat: 0,
+      transFat: 0,
+      carbohydrates: 0,
+      sugar: 0,
+      sodium: 0,
+      fiber: 0,
+      cholesterol: 0,
+    }
   );
 }
 
 /**
- * 計算每份數值（成本或營養成分）
- * @param total - 總數值
+ * 計算每份營養成分
+ * @param total - 總營養成分
  * @param servings - 份數
- * @returns 每份數值
+ * @returns 每份營養成分
  */
-export function calculatePerServing<T extends Record<string, number>>(
-  total: T,
+export function calculatePerServing(
+  total: NutritionTotal,
   servings: number
-): T {
+): NutritionTotal {
   if (servings <= 0) {
     return total;
   }
 
-  const result = {} as T;
-  for (const key in total) {
-    result[key] = total[key] / servings;
-  }
-  return result;
+  return {
+    calories: total.calories / servings,
+    protein: total.protein / servings,
+    fat: total.fat / servings,
+    saturatedFat: total.saturatedFat / servings,
+    transFat: total.transFat / servings,
+    carbohydrates: total.carbohydrates / servings,
+    sugar: total.sugar / servings,
+    sodium: total.sodium / servings,
+    fiber: total.fiber / servings,
+    cholesterol: total.cholesterol / servings,
+  };
 }
 
 /**

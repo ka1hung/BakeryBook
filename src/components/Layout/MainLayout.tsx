@@ -76,7 +76,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onPageCh
           placement="left"
           onClose={toggleDrawer}
           open={drawerVisible}
-          bodyStyle={{ padding: 0 }}
+          styles={{ body: { padding: 0 } }}
         >
           <Navigation currentPage={currentPage} onPageChange={onPageChange} />
         </Drawer>

@@ -1,23 +1,100 @@
 import React from 'react';
-import { Card, Typography, Row, Col, Statistic } from 'antd';
+import { Card, Typography, Row, Col, Statistic, message } from 'antd';
 import { ShoppingOutlined, BookOutlined } from '@ant-design/icons';
 import { useMaterials } from '../contexts/MaterialContext';
 import { useRecipes } from '../contexts/RecipeContext';
+import DataHealthCheck from '../components/common/DataHealthCheck';
+import DataManagement from '../components/common/DataManagement';
+import {
+  exportData,
+  downloadJsonFile,
+  validateImportData,
+  importData,
+} from '../utils/exportImport';
+import type { ImportOptions } from '../types/export';
 
 const { Title, Paragraph } = Typography;
 
 const HomePage: React.FC = () => {
-  const { materials } = useMaterials();
-  const { recipes } = useRecipes();
+  const { materials, setMaterials } = useMaterials();
+  const { recipes, setRecipes } = useRecipes();
+
+  // 處理匯出
+  const handleExport = () => {
+    const data = exportData(materials, recipes);
+    downloadJsonFile(data);
+    message.success('資料已匯出');
+  };
+
+  // 處理匯入
+  const handleImport = async (file: File, options: ImportOptions) => {
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+
+      if (!validateImportData(data)) {
+        message.error('檔案格式錯誤');
+        return;
+      }
+
+      const result = importData(data, materials, recipes, options);
+
+      if (result.success && result.materials && result.recipes) {
+        if (options.mode === 'replace') {
+          if (options.includeMaterials) {
+            setMaterials(result.materials);
+          }
+          if (options.includeRecipes) {
+            setRecipes(result.recipes);
+          }
+        } else {
+          // 合併模式
+          setMaterials(result.materials);
+          setRecipes(result.recipes);
+        }
+
+        message.success(
+          `匯入成功！材料: ${result.materialsImported}, 配方: ${result.recipesImported}`
+        );
+
+        if (result.skipped > 0) {
+          message.warning(`已跳過 ${result.skipped} 筆衝突資料`);
+        }
+
+        if (result.errors.length > 0) {
+          result.errors.forEach(error => message.warning(error));
+        }
+      } else {
+        message.error(`匯入失敗: ${result.errors.join(', ')}`);
+      }
+    } catch (error) {
+      message.error('檔案讀取失敗');
+    }
+  };
 
   return (
     <div>
-      <Title level={2} style={{ color: '#5B9BD5' }}>
-        歡迎使用配方資料庫
-      </Title>
-      <Paragraph style={{ fontSize: '16px', color: '#666' }}>
-        這是一個清新自然風格的配方管理系統，幫助您管理材料和配方。
-      </Paragraph>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: '16px',
+        }}
+      >
+        <div>
+          <Title level={2} style={{ color: '#5B9BD5', margin: 0 }}>
+            歡迎使用配方資料庫
+          </Title>
+          <Paragraph style={{ fontSize: '16px', color: '#666', marginTop: '8px' }}>
+            這是一個清新自然風格的配方管理系統，幫助您管理材料和配方。
+          </Paragraph>
+        </div>
+        <DataManagement onExport={handleExport} onImport={handleImport} />
+      </div>
+
+      {/* 資料健康檢查 */}
+      <DataHealthCheck />
 
       <Row gutter={[24, 24]} style={{ marginTop: '32px' }}>
         <Col xs={24} sm={12} lg={8}>

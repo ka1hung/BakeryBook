@@ -127,7 +127,7 @@ const IngredientSelector: React.FC<IngredientSelectorProps> = ({ materials }) =>
 
             <Button
               type="dashed"
-              onClick={() => add()}
+              onClick={() => add({ unit: 'g' })}
               block
               icon={<PlusOutlined />}
               style={{

@@ -1,16 +1,21 @@
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { createContext, useContext, useCallback, useEffect, useRef } from 'react';
 import { message } from 'antd';
 import type { Material, MaterialFormData } from '../types/material';
+import type { Recipe } from '../types/recipe';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { STORAGE_KEYS } from '../utils/storage';
+import { findMaterialUsage } from '../utils/referentialIntegrity';
+import { migrateMaterialData, needsMigration } from '../utils/migrations';
 
 // Context 介面
 interface MaterialContextType {
   materials: Material[];
   addMaterial: (materialData: MaterialFormData) => void;
   updateMaterial: (id: string, materialData: MaterialFormData) => void;
-  deleteMaterial: (id: string) => void;
+  deleteMaterial: (id: string, recipes: Recipe[]) => boolean;
   getMaterialById: (id: string) => Material | undefined;
+  getMaterialUsage: (id: string, recipes: Recipe[]) => Recipe[];
+  setMaterials: React.Dispatch<React.SetStateAction<Material[]>>;
 }
 
 // 建立 Context
@@ -19,6 +24,20 @@ const MaterialContext = createContext<MaterialContextType | undefined>(undefined
 // Provider 組件
 export const MaterialProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [materials, setMaterials] = useLocalStorage<Material[]>(STORAGE_KEYS.MATERIALS, []);
+  const hasMigrated = useRef(false);
+
+  // 資料遷移：在載入時自動遷移舊格式的營養資料
+  useEffect(() => {
+    // 避免重複執行遷移
+    if (hasMigrated.current) return;
+
+    if (materials.length > 0 && needsMigration(materials)) {
+      const migratedMaterials = migrateMaterialData(materials);
+      setMaterials(migratedMaterials);
+      message.info('營養資料已更新至台灣食品標示規範格式');
+      hasMigrated.current = true;
+    }
+  }, [materials, setMaterials]);
 
   // 新增材料
   const addMaterial = useCallback(
@@ -58,9 +77,19 @@ export const MaterialProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   // 刪除材料
   const deleteMaterial = useCallback(
-    (id: string) => {
+    (id: string, recipes: Recipe[]) => {
+      // 檢查材料是否被配方使用
+      const usedInRecipes = findMaterialUsage(id, recipes);
+
+      if (usedInRecipes.length > 0) {
+        message.error(`無法刪除：此材料正在 ${usedInRecipes.length} 個配方中使用`);
+        return false;
+      }
+
+      // 安全刪除
       setMaterials((prev) => prev.filter((material) => material.id !== id));
       message.success('材料已刪除');
+      return true;
     },
     [setMaterials]
   );
@@ -73,12 +102,22 @@ export const MaterialProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     [materials]
   );
 
+  // 取得材料使用狀況
+  const getMaterialUsage = useCallback(
+    (id: string, recipes: Recipe[]) => {
+      return findMaterialUsage(id, recipes);
+    },
+    []
+  );
+
   const value: MaterialContextType = {
     materials,
     addMaterial,
     updateMaterial,
     deleteMaterial,
     getMaterialById,
+    getMaterialUsage,
+    setMaterials,
   };
 
   return <MaterialContext.Provider value={value}>{children}</MaterialContext.Provider>;

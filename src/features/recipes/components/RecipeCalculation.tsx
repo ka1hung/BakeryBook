@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, Statistic, Row, Col, Divider, Typography } from 'antd';
+import { Card, Statistic, Row, Col, Divider, Typography, Tabs } from 'antd';
 import { DollarOutlined, FireOutlined } from '@ant-design/icons';
 import type { RecipeCalculation } from '../../../types/recipe';
-import { formatCurrency, formatNumber } from '../../../utils/calculations';
+import { formatNumber } from '../../../utils/calculations';
+import { NUTRITION_FIELDS } from '../../../types/material';
 
 const { Text } = Typography;
 
@@ -60,44 +61,70 @@ const RecipeCalculationDisplay: React.FC<RecipeCalculationProps> = ({ calculatio
           營養成分
         </Text>
 
-        <Row gutter={[16, 16]} style={{ marginTop: '12px' }}>
-          <Col span={12}>
-            <div style={{ textAlign: 'center', padding: '12px', backgroundColor: 'rgba(255, 183, 77, 0.1)', borderRadius: '8px' }}>
-              <Text type="secondary" style={{ fontSize: '13px' }}>熱量</Text>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#FFB74D' }}>
-                {formatNumber(nutritionPerServing?.calories || totalNutrition.calories)}
-                <Text style={{ fontSize: '14px', marginLeft: '4px' }}>卡</Text>
-              </div>
-            </div>
-          </Col>
-          <Col span={12}>
-            <div style={{ textAlign: 'center', padding: '12px', backgroundColor: 'rgba(129, 199, 132, 0.1)', borderRadius: '8px' }}>
-              <Text type="secondary" style={{ fontSize: '13px' }}>蛋白質</Text>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#81C784' }}>
-                {formatNumber(nutritionPerServing?.protein || totalNutrition.protein)}
-                <Text style={{ fontSize: '14px', marginLeft: '4px' }}>g</Text>
-              </div>
-            </div>
-          </Col>
-          <Col span={12}>
-            <div style={{ textAlign: 'center', padding: '12px', backgroundColor: 'rgba(239, 154, 154, 0.1)', borderRadius: '8px' }}>
-              <Text type="secondary" style={{ fontSize: '13px' }}>脂肪</Text>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#EF9A9A' }}>
-                {formatNumber(nutritionPerServing?.fat || totalNutrition.fat)}
-                <Text style={{ fontSize: '14px', marginLeft: '4px' }}>g</Text>
-              </div>
-            </div>
-          </Col>
-          <Col span={12}>
-            <div style={{ textAlign: 'center', padding: '12px', backgroundColor: 'rgba(91, 155, 213, 0.1)', borderRadius: '8px' }}>
-              <Text type="secondary" style={{ fontSize: '13px' }}>碳水化合物</Text>
-              <div style={{ fontSize: '20px', fontWeight: 'bold', color: '#5B9BD5' }}>
-                {formatNumber(nutritionPerServing?.carbohydrates || totalNutrition.carbohydrates)}
-                <Text style={{ fontSize: '14px', marginLeft: '4px' }}>g</Text>
-              </div>
-            </div>
-          </Col>
-        </Row>
+        <Tabs
+          defaultActiveKey="summary"
+          style={{ marginTop: '12px' }}
+          items={[
+            {
+              key: 'summary',
+              label: '概要',
+              children: (
+                <Row gutter={[16, 16]}>
+                  {['calories', 'protein', 'carbohydrates', 'fat'].map(key => {
+                    const field = NUTRITION_FIELDS.find(f => f.key === key);
+                    if (!field) return null;
+                    const value = nutritionPerServing?.[key as keyof typeof nutritionPerServing] || totalNutrition[key as keyof typeof totalNutrition];
+                    return (
+                      <Col xs={12} sm={12} md={6} key={key}>
+                        <div style={{
+                          textAlign: 'center',
+                          padding: '12px',
+                          backgroundColor: `${field.color}15`,
+                          borderRadius: '8px',
+                          border: `1px solid ${field.color}40`
+                        }}>
+                          <Text type="secondary" style={{ fontSize: '13px' }}>{field.label}</Text>
+                          <div style={{ fontSize: '20px', fontWeight: 'bold', color: field.color }}>
+                            {formatNumber(value)}
+                            <Text style={{ fontSize: '14px', marginLeft: '4px' }}>{field.unit}</Text>
+                          </div>
+                        </div>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              ),
+            },
+            {
+              key: 'detailed',
+              label: '詳細',
+              children: (
+                <Row gutter={[16, 16]}>
+                  {NUTRITION_FIELDS.map(field => {
+                    const value = nutritionPerServing?.[field.key as keyof typeof nutritionPerServing] || totalNutrition[field.key as keyof typeof totalNutrition];
+                    return (
+                      <Col xs={12} sm={8} md={6} key={field.key}>
+                        <div style={{
+                          textAlign: 'center',
+                          padding: '12px',
+                          backgroundColor: `${field.color}15`,
+                          borderRadius: '8px',
+                          border: `1px solid ${field.color}40`
+                        }}>
+                          <Text type="secondary" style={{ fontSize: '13px' }}>{field.label}</Text>
+                          <div style={{ fontSize: '18px', fontWeight: 'bold', color: field.color }}>
+                            {formatNumber(value)}
+                            <Text style={{ fontSize: '12px', marginLeft: '4px' }}>{field.unit}</Text>
+                          </div>
+                        </div>
+                      </Col>
+                    );
+                  })}
+                </Row>
+              ),
+            },
+          ]}
+        />
 
         {nutritionPerServing && (
           <div style={{ marginTop: '12px', textAlign: 'center' }}>

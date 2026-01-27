@@ -126,7 +126,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
       okText="確定"
       cancelText="取消"
     >
-      <Form form={form} layout="vertical" autoComplete="off">
+      <Form form={form} layout="vertical" autoComplete="off" initialValues={{ ingredients: [] }}>
         <Tabs items={tabItems} />
       </Form>
     </Modal>
