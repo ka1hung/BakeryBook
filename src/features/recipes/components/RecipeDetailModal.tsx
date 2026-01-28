@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Modal, Typography, Divider, List, Tag } from 'antd';
 import type { Recipe } from '../../../types/recipe';
 import type { Material } from '../../../types/material';
 import RecipeCalculationDisplay from './RecipeCalculation';
+import NutritionLabel from './NutritionLabel';
 import { useRecipeCalculator } from '../hooks/useRecipeCalculator';
+import { convertToBaseUnit } from '../../../utils/calculations';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -29,6 +31,19 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
     recipe.fuelCost || 0,
     recipe.laborCost || 0
   );
+
+  // 計算配方總重量（克）
+  const totalWeight = useMemo(() => {
+    return recipe.ingredients.reduce((total, ingredient) => {
+      return total + convertToBaseUnit(ingredient.weight, ingredient.unit);
+    }, 0);
+  }, [recipe.ingredients]);
+
+  // 檢查是否有營養資料
+  const hasNutritionData = useMemo(() => {
+    const { totalNutrition } = calculation;
+    return totalNutrition.calories > 0 || totalNutrition.protein > 0 || totalNutrition.fat > 0;
+  }, [calculation]);
 
   const unitDisplay = {
     g: '克',
@@ -104,6 +119,22 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
         計算結果
       </Title>
       <RecipeCalculationDisplay calculation={calculation} />
+
+      {/* 台灣食品營養標示 */}
+      {hasNutritionData && (
+        <>
+          <Divider />
+          <Title level={5} style={{ color: '#8B4513', marginBottom: '16px' }}>
+            營養標示下載
+          </Title>
+          <NutritionLabel
+            nutrition={calculation.totalNutrition}
+            recipeName={recipe.name}
+            servings={recipe.servings || 1}
+            totalWeight={totalWeight}
+          />
+        </>
+      )}
     </Modal>
   );
 };
