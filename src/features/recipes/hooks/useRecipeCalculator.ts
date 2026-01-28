@@ -10,9 +10,11 @@ import { calculateRecipe } from '../../../utils/calculations';
 export const useRecipeCalculator = (
   ingredients: RecipeIngredient[],
   materials: Material[],
-  servings?: number
+  servings?: number,
+  fuelCost: number = 0,
+  laborCost: number = 0
 ): RecipeCalculation => {
   return useMemo(() => {
-    return calculateRecipe(ingredients, materials, servings);
-  }, [ingredients, materials, servings]);
+    return calculateRecipe(ingredients, materials, servings, fuelCost, laborCost);
+  }, [ingredients, materials, servings, fuelCost, laborCost]);
 };

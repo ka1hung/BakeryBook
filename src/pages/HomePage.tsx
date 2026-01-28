@@ -88,11 +88,11 @@ const HomePage: React.FC<HomePageProps> = ({ onPageChange }) => {
         }}
       >
         <div>
-          <Title level={2} style={{ color: '#5B9BD5', margin: 0 }}>
+          <Title level={2} style={{ color: '#8B4513', margin: 0 }}>
             歡迎使用配方資料庫
           </Title>
-          <Paragraph style={{ fontSize: '16px', color: '#666', marginTop: '8px' }}>
-            這是一個清新自然風格的配方管理系統，幫助您管理材料和配方。
+          <Paragraph style={{ fontSize: '16px', color: '#5D4037', marginTop: '8px' }}>
+            專業烘焙配方管理系統，幫助您精準管理材料成本和營養成分。
           </Paragraph>
         </div>
         <DataManagement onExport={handleExport} onImport={handleImport} />
@@ -107,16 +107,17 @@ const HomePage: React.FC<HomePageProps> = ({ onPageChange }) => {
             hoverable
             onClick={() => onPageChange('materials')}
             style={{
-              borderRadius: '16px',
-              boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+              borderRadius: '12px',
+              boxShadow: '0 2px 12px rgba(139, 69, 19, 0.06)',
+              border: '1px solid #FAEBD7',
               cursor: 'pointer',
             }}
           >
             <Statistic
               title="材料總數"
               value={materials.length}
-              prefix={<ShoppingOutlined style={{ color: '#5B9BD5' }} />}
-              valueStyle={{ color: '#5B9BD5' }}
+              prefix={<ShoppingOutlined style={{ color: '#8B4513' }} />}
+              valueStyle={{ color: '#8B4513' }}
             />
           </Card>
         </Col>
@@ -126,16 +127,17 @@ const HomePage: React.FC<HomePageProps> = ({ onPageChange }) => {
             hoverable
             onClick={() => onPageChange('recipes')}
             style={{
-              borderRadius: '16px',
-              boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+              borderRadius: '12px',
+              boxShadow: '0 2px 12px rgba(139, 69, 19, 0.06)',
+              border: '1px solid #FAEBD7',
               cursor: 'pointer',
             }}
           >
             <Statistic
               title="配方總數"
               value={recipes.length}
-              prefix={<BookOutlined style={{ color: '#81C784' }} />}
-              valueStyle={{ color: '#81C784' }}
+              prefix={<BookOutlined style={{ color: '#6B8E23' }} />}
+              valueStyle={{ color: '#6B8E23' }}
             />
           </Card>
         </Col>
@@ -144,11 +146,12 @@ const HomePage: React.FC<HomePageProps> = ({ onPageChange }) => {
       <Card
         style={{
           marginTop: '32px',
-          borderRadius: '16px',
-          boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+          borderRadius: '12px',
+          boxShadow: '0 2px 12px rgba(139, 69, 19, 0.06)',
+          border: '1px solid #FAEBD7',
         }}
       >
-        <Title level={4}>功能介紹</Title>
+        <Title level={4} style={{ color: '#8B4513' }}>功能介紹</Title>
         <ul style={{ fontSize: '15px', lineHeight: '2' }}>
           <li>
             <strong>材料管理：</strong>新增、編輯、刪除材料，支援營養成分記錄

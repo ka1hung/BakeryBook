@@ -31,14 +31,21 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onCopy,
   onView,
 }) => {
-  const calculation = useRecipeCalculator(recipe.ingredients, materials, recipe.servings);
+  const calculation = useRecipeCalculator(
+    recipe.ingredients,
+    materials,
+    recipe.servings,
+    recipe.fuelCost || 0,
+    recipe.laborCost || 0
+  );
 
   return (
     <Card
       hoverable
       style={{
-        borderRadius: '16px',
-        boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+        borderRadius: '12px',
+        boxShadow: '0 2px 12px rgba(139, 69, 19, 0.06)',
+        border: '1px solid #FAEBD7',
         transition: 'all 0.3s ease',
       }}
       styles={{
@@ -68,7 +75,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       ]}
     >
       {/* 配方名稱 */}
-      <Text strong style={{ fontSize: '18px', color: '#333' }}>
+      <Text strong style={{ fontSize: '18px', color: '#3E2723' }}>
         {recipe.name}
       </Text>
 
@@ -77,14 +84,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         <Space direction="vertical" size={4} style={{ width: '100%' }}>
           <div>
             <Text type="secondary">總成本：</Text>
-            <Text strong style={{ color: '#5B9BD5', fontSize: '20px' }}>
+            <Text strong style={{ color: '#8B4513', fontSize: '20px' }}>
               {formatCurrency(calculation.totalCost)}
             </Text>
           </div>
           {calculation.costPerServing && (
             <div>
               <Text type="secondary">每份成本：</Text>
-              <Text strong style={{ color: '#81C784', fontSize: '16px' }}>
+              <Text strong style={{ color: '#6B8E23', fontSize: '16px' }}>
                 {formatCurrency(calculation.costPerServing)}
               </Text>
             </div>
@@ -96,7 +103,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       {recipe.description && (
         <Paragraph
           ellipsis={{ rows: 2 }}
-          style={{ marginTop: '12px', marginBottom: '8px', color: '#666' }}
+          style={{ marginTop: '12px', marginBottom: '8px', color: '#5D4037' }}
         >
           {recipe.description}
         </Paragraph>
@@ -105,7 +112,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       {/* 標籤 */}
       <div style={{ marginTop: '12px' }}>
         <Space size={[8, 8]} wrap>
-          <Tag icon={<ShoppingOutlined />} color="blue">
+          <Tag icon={<ShoppingOutlined />} color="orange">
             {recipe.ingredients.length} 種材料
           </Tag>
           {recipe.servings && (

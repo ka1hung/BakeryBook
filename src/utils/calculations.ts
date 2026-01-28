@@ -195,17 +195,25 @@ export function calculatePerServing(
  * @param ingredients - 配方材料列表
  * @param materials - 所有材料資料
  * @param servings - 份數（選填）
+ * @param fuelCost - 燃料費/電費（選填）
+ * @param laborCost - 人工費用（選填）
  * @returns 計算結果
  */
 export function calculateRecipe(
   ingredients: RecipeIngredient[],
   materials: Material[],
-  servings?: number
+  servings?: number,
+  fuelCost: number = 0,
+  laborCost: number = 0
 ): RecipeCalculation {
-  const totalCost = calculateTotalCost(ingredients, materials);
+  const materialCost = calculateTotalCost(ingredients, materials);
   const totalNutrition = calculateTotalNutrition(ingredients, materials);
+  const totalCost = materialCost + fuelCost + laborCost;
 
   const result: RecipeCalculation = {
+    materialCost,
+    fuelCost,
+    laborCost,
     totalCost,
     totalNutrition,
   };

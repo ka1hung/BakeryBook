@@ -22,7 +22,13 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
 }) => {
   if (!recipe) return null;
 
-  const calculation = useRecipeCalculator(recipe.ingredients, materials, recipe.servings);
+  const calculation = useRecipeCalculator(
+    recipe.ingredients,
+    materials,
+    recipe.servings,
+    recipe.fuelCost || 0,
+    recipe.laborCost || 0
+  );
 
   const unitDisplay = {
     g: '克',
@@ -47,7 +53,7 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
       {/* 配方描述 */}
       {recipe.description && (
         <>
-          <Paragraph style={{ color: '#666', fontSize: '15px' }}>
+          <Paragraph style={{ color: '#5D4037', fontSize: '15px' }}>
             {recipe.description}
           </Paragraph>
           <Divider />
@@ -68,7 +74,7 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
       )}
 
       {/* 材料列表 */}
-      <Title level={5} style={{ color: '#5B9BD5' }}>
+      <Title level={5} style={{ color: '#8B4513' }}>
         材料列表
       </Title>
       <List
@@ -94,7 +100,7 @@ const RecipeDetailModal: React.FC<RecipeDetailModalProps> = ({
       <Divider />
 
       {/* 計算結果 */}
-      <Title level={5} style={{ color: '#5B9BD5', marginBottom: '16px' }}>
+      <Title level={5} style={{ color: '#8B4513', marginBottom: '16px' }}>
         計算結果
       </Title>
       <RecipeCalculationDisplay calculation={calculation} />

@@ -3,13 +3,60 @@
 @tailwind utilities;
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
+
+  /* Bakery theme CSS variables */
+  --bakery-primary: #8B4513;
+  --bakery-secondary: #D2691E;
+  --bakery-bg: #FDF5E6;
+  --bakery-card-bg: #FFFAF0;
+  --bakery-text: #3E2723;
+  --bakery-text-secondary: #5D4037;
+  --bakery-border: #DEB887;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bakery-bg);
+  color: var(--bakery-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Professional typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Clean card hover effect */
+.ant-card:hover {
+  box-shadow: 0 4px 20px rgba(139, 69, 19, 0.12);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Button refinements */
+.ant-btn-primary {
+  font-weight: 500;
+}
+
+/* Input focus states */
+.ant-input:focus,
+.ant-input-focused,
+.ant-select-focused .ant-select-selector {
+  border-color: #CD853F !important;
+  box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.1) !important;
+}
+
+/* Smooth transitions */
+.ant-card,
+.ant-btn,
+.ant-input,
+.ant-select-selector {
+  transition: all 0.3s ease;
 }

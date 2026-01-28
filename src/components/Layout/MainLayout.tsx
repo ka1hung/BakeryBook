@@ -20,16 +20,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onPageCh
   };
 
   return (
-    <Layout style={{ minHeight: '100vh', backgroundColor: '#F0F8FF' }}>
+    <Layout style={{ minHeight: '100vh', backgroundColor: '#FDF5E6' }}>
       {/* Header */}
       <Header
         style={{
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#FFFAF0',
           padding: '0 24px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          boxShadow: '0 2px 8px rgba(91, 155, 213, 0.08)',
+          boxShadow: '0 2px 8px rgba(139, 69, 19, 0.06)',
+          borderBottom: '1px solid #DEB887',
           position: 'sticky',
           top: 0,
           zIndex: 10,
@@ -39,11 +40,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onPageCh
           level={3}
           style={{
             margin: 0,
-            color: '#5B9BD5',
+            color: '#8B4513',
             fontWeight: 600,
+            letterSpacing: '-0.02em',
           }}
         >
-          🍳 配方資料庫
+          🥐 配方資料庫
         </Title>
 
         {/* 手機版選單按鈕 */}
@@ -63,8 +65,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onPageCh
           collapsedWidth={0}
           className="hidden md:block"
           style={{
-            backgroundColor: '#FFFFFF',
-            boxShadow: '2px 0 8px rgba(91, 155, 213, 0.06)',
+            backgroundColor: '#FFFAF0',
+            boxShadow: '2px 0 8px rgba(139, 69, 19, 0.04)',
+            borderRight: '1px solid #FAEBD7',
           }}
         >
           <Navigation currentPage={currentPage} onPageChange={onPageChange} />
@@ -85,7 +88,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onPageCh
         <Content
           style={{
             padding: '24px',
-            backgroundColor: '#F0F8FF',
+            backgroundColor: '#FDF5E6',
             minHeight: 'calc(100vh - 64px)',
           }}
         >

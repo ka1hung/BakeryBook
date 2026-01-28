@@ -14,6 +14,8 @@ export interface Recipe {
   description?: string;           // 配方描述（選填）
   servings?: number;              // 預計製作份數（選填）
   ingredients: RecipeIngredient[]; // 材料列表
+  fuelCost?: number;              // 燃料費/電費 (NT$)（選填）
+  laborCost?: number;             // 人工費用 (NT$)（選填）
   createdAt: string;              // ISO 日期字串
   updatedAt: string;              // ISO 日期字串
 }
@@ -34,7 +36,10 @@ export interface NutritionTotal {
 
 // 配方計算結果
 export interface RecipeCalculation {
-  totalCost: number;              // 總成本
+  materialCost: number;           // 材料成本
+  fuelCost: number;               // 燃料費/電費
+  laborCost: number;              // 人工費用
+  totalCost: number;              // 總成本 = materialCost + fuelCost + laborCost
   costPerServing?: number;        // 每份成本
   totalNutrition: NutritionTotal; // 總營養成分
   nutritionPerServing?: NutritionTotal; // 每份營養成分

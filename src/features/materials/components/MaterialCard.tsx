@@ -26,8 +26,9 @@ const MaterialCard: React.FC<MaterialCardProps> = ({ material, onEdit, onDelete 
     <Card
       hoverable
       style={{
-        borderRadius: '16px',
-        boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+        borderRadius: '12px',
+        boxShadow: '0 2px 12px rgba(139, 69, 19, 0.06)',
+        border: '1px solid #FAEBD7',
         transition: 'all 0.3s ease',
       }}
       styles={{
@@ -56,7 +57,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({ material, onEdit, onDelete 
       ]}
     >
       {/* 材料名稱 */}
-      <Text strong style={{ fontSize: '18px', color: '#333' }}>
+      <Text strong style={{ fontSize: '18px', color: '#3E2723' }}>
         {material.name}
       </Text>
 
@@ -65,13 +66,13 @@ const MaterialCard: React.FC<MaterialCardProps> = ({ material, onEdit, onDelete 
         <Space direction="vertical" size={4} style={{ width: '100%' }}>
           <div>
             <Text type="secondary">價錢：</Text>
-            <Text strong style={{ color: '#5B9BD5', fontSize: '16px' }}>
+            <Text strong style={{ color: '#8B4513', fontSize: '16px' }}>
               {formatCurrency(material.price)}
             </Text>
           </div>
           <div>
             <Text type="secondary">重量：</Text>
-            <Text strong>
+            <Text strong style={{ color: '#5D4037' }}>
               {material.weight} {unitDisplay[material.unit]}
             </Text>
           </div>
@@ -82,7 +83,7 @@ const MaterialCard: React.FC<MaterialCardProps> = ({ material, onEdit, onDelete 
       {material.description && (
         <Paragraph
           ellipsis={{ rows: 2 }}
-          style={{ marginTop: '12px', marginBottom: '8px', color: '#666' }}
+          style={{ marginTop: '12px', marginBottom: '8px', color: '#5D4037' }}
         >
           {material.description}
         </Paragraph>

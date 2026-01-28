@@ -31,7 +31,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   // 監聽表單變化以即時計算
   const ingredients = Form.useWatch('ingredients', form) || [];
   const servings = Form.useWatch('servings', form);
-  const calculation = useRecipeCalculator(ingredients, materials, servings);
+  const fuelCost = Form.useWatch('fuelCost', form) || 0;
+  const laborCost = Form.useWatch('laborCost', form) || 0;
+  const calculation = useRecipeCalculator(ingredients, materials, servings, fuelCost, laborCost);
 
   useEffect(() => {
     if (open) {
@@ -91,6 +93,26 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
               style={{ width: '100%' }}
               min={1}
               precision={0}
+            />
+          </Form.Item>
+
+          <Form.Item label="燃料費/電費（選填）" name="fuelCost">
+            <InputNumber
+              placeholder="請輸入燃料費或電費"
+              style={{ width: '100%' }}
+              min={0}
+              precision={2}
+              addonAfter="元"
+            />
+          </Form.Item>
+
+          <Form.Item label="人工費用（選填）" name="laborCost">
+            <InputNumber
+              placeholder="請輸入人工費用"
+              style={{ width: '100%' }}
+              min={0}
+              precision={2}
+              addonAfter="元"
             />
           </Form.Item>
         </div>
