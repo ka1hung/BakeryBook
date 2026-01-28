@@ -15,7 +15,11 @@ import type { ImportOptions } from '../types/export';
 
 const { Title, Paragraph } = Typography;
 
-const HomePage: React.FC = () => {
+interface HomePageProps {
+  onPageChange: (page: string) => void;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ onPageChange }) => {
   const { materials, setMaterials } = useMaterials();
   const { recipes, setRecipes } = useRecipes();
 
@@ -69,6 +73,7 @@ const HomePage: React.FC = () => {
       }
     } catch (error) {
       message.error('檔案讀取失敗');
+      console.log(error)
     }
   };
 
@@ -100,9 +105,11 @@ const HomePage: React.FC = () => {
         <Col xs={24} sm={12} lg={8}>
           <Card
             hoverable
+            onClick={() => onPageChange('materials')}
             style={{
               borderRadius: '16px',
               boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+              cursor: 'pointer',
             }}
           >
             <Statistic
@@ -117,9 +124,11 @@ const HomePage: React.FC = () => {
         <Col xs={24} sm={12} lg={8}>
           <Card
             hoverable
+            onClick={() => onPageChange('recipes')}
             style={{
               borderRadius: '16px',
               boxShadow: '0 2px 12px rgba(91, 155, 213, 0.08)',
+              cursor: 'pointer',
             }}
           >
             <Statistic

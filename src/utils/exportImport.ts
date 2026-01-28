@@ -8,6 +8,159 @@ const APP_VERSION = '0.2.0';
 const CURRENT_EXPORT_VERSION = 1;
 
 /**
+ * 驗證字串是否為有效的 ISO 日期格式
+ * @param dateString 待驗證的日期字串
+ * @returns 是否為有效的 ISO 日期字串
+ */
+function isValidISODateString(dateString: unknown): dateString is string {
+  if (typeof dateString !== 'string') return false;
+
+  // Check if it's a valid ISO date string
+  const date = new Date(dateString);
+  return !isNaN(date.getTime()) && date.toISOString() === dateString;
+}
+
+/**
+ * 驗證單位是否為有效的 Unit 類型
+ * @param unit 待驗證的單位
+ * @returns 是否為有效單位
+ */
+function isValidUnit(unit: unknown): unit is import('../types/material').Unit {
+  const validUnits: import('../types/material').Unit[] = ['g', 'kg', 'ml', 'l'];
+  return typeof unit === 'string' && validUnits.includes(unit as import('../types/material').Unit);
+}
+
+/**
+ * 驗證營養成分結構
+ * @param nutrition 待驗證的營養成分物件
+ * @returns 是否為有效的營養成分結構
+ */
+function validateNutritionStructure(nutrition: unknown): nutrition is import('../types/material').Nutrition {
+  if (!nutrition || typeof nutrition !== 'object') return false;
+
+  const n = nutrition as Record<string, unknown>;
+
+  // All nutrition fields are optional, but if present must be numbers >= 0
+  const optionalNumberFields = [
+    'calories',
+    'protein',
+    'fat',
+    'saturatedFat',
+    'transFat',
+    'carbohydrates',
+    'sugar',
+    'sodium',
+    'fiber',
+    'cholesterol',
+  ];
+
+  for (const field of optionalNumberFields) {
+    if (n[field] !== undefined) {
+      if (typeof n[field] !== 'number' || (n[field] as number) < 0) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
+ * 驗證配方材料項目結構
+ * @param ingredient 待驗證的材料項目
+ * @returns 是否為有效的材料項目結構
+ */
+function validateIngredientStructure(ingredient: unknown): ingredient is import('../types/recipe').RecipeIngredient {
+  if (!ingredient || typeof ingredient !== 'object') return false;
+
+  const ing = ingredient as Record<string, unknown>;
+
+  // Validate required fields
+  if (typeof ing.materialId !== 'string' || ing.materialId.length === 0) {
+    return false;
+  }
+  if (typeof ing.weight !== 'number' || ing.weight <= 0) return false;
+  if (!isValidUnit(ing.unit)) return false;
+
+  return true;
+}
+
+/**
+ * 驗證材料結構的所有必要欄位
+ * @param material 待驗證的材料物件
+ * @returns 是否為有效的材料結構
+ */
+function validateMaterialStructure(material: unknown): material is Material {
+  if (!material || typeof material !== 'object') return false;
+
+  const m = material as Record<string, unknown>;
+
+  // Validate required string fields
+  if (typeof m.id !== 'string' || m.id.length === 0) return false;
+  if (typeof m.name !== 'string' || m.name.length === 0) return false;
+
+  // Validate required number fields
+  if (typeof m.price !== 'number' || m.price < 0) return false;
+  if (typeof m.weight !== 'number' || m.weight <= 0) return false;
+
+  // Validate unit is a valid enum value
+  if (!isValidUnit(m.unit)) return false;
+
+  // Validate timestamp fields (required)
+  if (!isValidISODateString(m.createdAt)) return false;
+  if (!isValidISODateString(m.updatedAt)) return false;
+
+  // Validate optional description
+  if (m.description !== undefined && typeof m.description !== 'string') {
+    return false;
+  }
+
+  // Validate optional nutrition object
+  if (m.nutrition !== undefined) {
+    if (!validateNutritionStructure(m.nutrition)) return false;
+  }
+
+  return true;
+}
+
+/**
+ * 驗證配方結構的所有必要欄位
+ * @param recipe 待驗證的配方物件
+ * @returns 是否為有效的配方結構
+ */
+function validateRecipeStructure(recipe: unknown): recipe is Recipe {
+  if (!recipe || typeof recipe !== 'object') return false;
+
+  const r = recipe as Record<string, unknown>;
+
+  // Validate required string fields
+  if (typeof r.id !== 'string' || r.id.length === 0) return false;
+  if (typeof r.name !== 'string' || r.name.length === 0) return false;
+
+  // Validate timestamp fields (required)
+  if (!isValidISODateString(r.createdAt)) return false;
+  if (!isValidISODateString(r.updatedAt)) return false;
+
+  // Validate ingredients array
+  if (!Array.isArray(r.ingredients)) return false;
+  for (const ingredient of r.ingredients) {
+    if (!validateIngredientStructure(ingredient)) return false;
+  }
+
+  // Validate optional description
+  if (r.description !== undefined && typeof r.description !== 'string') {
+    return false;
+  }
+
+  // Validate optional servings
+  if (r.servings !== undefined) {
+    if (typeof r.servings !== 'number' || r.servings < 1) return false;
+  }
+
+  return true;
+}
+
+/**
  * 匯出所有資料為JSON格式
  * @param materials 材料陣列
  * @param recipes 配方陣列
@@ -59,37 +212,44 @@ export function downloadJsonFile(data: ExportData, filename?: string): void {
  * @returns 是否為有效的匯出資料
  */
 export function validateImportData(data: unknown): data is ExportData {
+  // Step 1: 檢查是否為物件
   if (!data || typeof data !== 'object') return false;
 
-  const exportData = data as Partial<ExportData>;
+  // Step 2: 使用 Record<string, unknown> 型別斷言
+  const obj = data as Record<string, unknown>;
 
-  // 檢查必要欄位
-  if (!exportData.version || !exportData.data) return false;
-  if (
-    !Array.isArray(exportData.data.materials) ||
-    !Array.isArray(exportData.data.recipes)
-  ) {
-    return false;
+  // Step 3: 驗證頂層必要欄位
+  if (typeof obj.version !== 'number') return false;
+  if (typeof obj.exportDate !== 'string') return false;
+
+  // Step 4: 驗證 metadata 物件
+  if (!obj.metadata || typeof obj.metadata !== 'object') return false;
+  const metadata = obj.metadata as Record<string, unknown>;
+  if (typeof metadata.appName !== 'string') return false;
+  if (typeof metadata.appVersion !== 'string') return false;
+  if (typeof metadata.materialsCount !== 'number') return false;
+  if (typeof metadata.recipesCount !== 'number') return false;
+
+  // Step 5: 驗證 data 物件存在且為物件
+  if (!obj.data || typeof obj.data !== 'object') return false;
+
+  // Step 6: 安全地收窄 data 型別
+  const dataObj = obj.data as Record<string, unknown>;
+
+  // Step 7: 驗證 materials 陣列存在且為陣列
+  if (!Array.isArray(dataObj.materials)) return false;
+
+  // Step 8: 驗證 recipes 陣列存在且為陣列
+  if (!Array.isArray(dataObj.recipes)) return false;
+
+  // Step 9: 驗證每個材料的結構
+  for (const material of dataObj.materials) {
+    if (!validateMaterialStructure(material)) return false;
   }
 
-  // 驗證材料結構
-  for (const material of exportData.data.materials) {
-    if (
-      !material.id ||
-      !material.name ||
-      material.price === undefined ||
-      material.weight === undefined ||
-      !material.unit
-    ) {
-      return false;
-    }
-  }
-
-  // 驗證配方結構
-  for (const recipe of exportData.data.recipes) {
-    if (!recipe.id || !recipe.name || !Array.isArray(recipe.ingredients)) {
-      return false;
-    }
+  // Step 10: 驗證每個配方的結構
+  for (const recipe of dataObj.recipes) {
+    if (!validateRecipeStructure(recipe)) return false;
   }
 
   return true;

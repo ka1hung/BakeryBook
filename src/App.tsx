@@ -20,7 +20,7 @@ function App() {
         return <RecipesPage />
       case 'home':
       default:
-        return <HomePage />
+        return <HomePage onPageChange={setCurrentPage} />
     }
   }
 

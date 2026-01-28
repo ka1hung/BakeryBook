@@ -55,7 +55,7 @@ const DataManagement: React.FC<DataManagementProps> = ({
       return;
     }
 
-    const file = fileList[0].originFileObj as File;
+    const file = (fileList[0].originFileObj || fileList[0]) as File;
     onImport(file, importOptions);
     setImportModalOpen(false);
     setFileList([]);
@@ -65,9 +65,11 @@ const DataManagement: React.FC<DataManagementProps> = ({
     accept: '.json',
     maxCount: 1,
     fileList,
-    beforeUpload: (file: File) => {
-      setFileList([file as any]);
+    beforeUpload: () => {
       return false; // 防止自動上傳
+    },
+    onChange: (info: any) => {
+      setFileList(info.fileList);
     },
     onRemove: () => {
       setFileList([]);

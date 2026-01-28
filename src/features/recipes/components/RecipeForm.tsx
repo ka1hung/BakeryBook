@@ -79,8 +79,8 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           <Form.Item label="配方描述（選填）" name="description">
             <TextArea
               placeholder="請輸入配方描述"
-              rows={3}
-              maxLength={500}
+              rows={6}
+              maxLength={3000}
               showCount
             />
           </Form.Item>
