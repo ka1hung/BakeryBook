@@ -49,4 +49,6 @@ export function clear(): void {
 export const STORAGE_KEYS = {
   MATERIALS: 'recipe_db_materials',
   RECIPES: 'recipe_db_recipes',
+  MATERIAL_VIEW_MODE: 'recipe_db_material_view_mode',
+  RECIPE_VIEW_MODE: 'recipe_db_recipe_view_mode',
 } as const;

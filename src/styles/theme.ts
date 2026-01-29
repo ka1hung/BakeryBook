@@ -110,5 +110,21 @@ export const theme: ThemeConfig = {
     Tag: {
       borderRadiusSM: 6,
     },
+    // 表格組件
+    Table: {
+      borderRadius: 12,
+      colorBgContainer: '#FFFAF0',
+      headerBg: '#FDF5E6',
+      headerColor: '#3E2723',
+      rowHoverBg: '#FFF8EE',
+      borderColor: '#FAEBD7',
+    },
+    // 分段控制器
+    Segmented: {
+      borderRadius: 8,
+      colorBgLayout: '#FDF5E6',
+      itemSelectedBg: '#FFFAF0',
+      itemSelectedColor: '#8B4513',
+    },
   },
 };
